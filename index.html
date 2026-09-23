@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wayfare Digital: Sites built for small business, kept running for good</title>
+<meta name="theme-color" content="#1C2B3A">
+<meta name="description" content="Fast, phone-first websites for small business owners, built by a software developer and kept running every month.">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Wayfare">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1C2B3A;
+    --ink-soft: #3A4C5C;
+    --parchment: #EFE9DC;
+    --bone: #FAF7F0;
+    --ochre: #B8752E;
+    --ochre-deep: #96601F;
+    --moss: #4A5D45;
+    --line: rgba(28,43,58,0.14);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #F2EEE4;
+      --ink-soft: #C9C2B2;
+      --parchment: #171C22;
+      --bone: #1F2530;
+      --ochre: #D08B42;
+      --ochre-deep: #E4A25B;
+      --moss: #7C9575;
+      --line: rgba(242,238,228,0.14);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #F2EEE4;
+    --ink-soft: #C9C2B2;
+    --parchment: #171C22;
+    --bone: #1F2530;
+    --ochre: #D08B42;
+    --ochre-deep: #E4A25B;
+    --moss: #7C9575;
+    --line: rgba(242,238,228,0.14);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--parchment);
+    color: var(--ink);
+    font-family: 'Work Sans', system-ui, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: 'Fraunces', Georgia, serif; margin: 0; color: var(--ink); }
+  p { max-width: 62ch; }
+  a { color: inherit; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+  section { padding: 96px 0; }
+  @media (max-width: 720px) { section { padding: 64px 0; } .wrap { padding: 0 20px; } }
+
+  /* NAV */
+  header {
+    position: sticky; top: 0; z-index: 20;
+    padding-top: env(safe-area-inset-top, 0px);
+    background: color-mix(in srgb, var(--parchment) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav.wrap { display: flex; align-items: center; justify-content: space-between; padding-top: 18px; padding-bottom: 18px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 600; letter-spacing: 0.01em; }
+  .brand-mark { width: 34px; height: 34px; flex-shrink: 0; }
+  .brand { white-space: nowrap; }
+  nav .cta-btn { white-space: nowrap; }
+  @media (max-width: 480px) {
+    .brand { font-size: 1.02rem; gap: 8px; }
+    .brand-mark { width: 28px; height: 28px; }
+    nav .cta-btn { padding: 10px 14px; font-size: 0.86rem; }
+  }
+  a.brand { color: inherit; text-decoration: none; }
+  .footer-row .brand-mark { width: 24px; height: 24px; }
+  nav .links { display: flex; gap: 28px; font-size: 0.94rem; color: var(--ink-soft); }
+  nav .links a { text-decoration: none; }
+  nav .links a:hover { color: var(--ochre-deep); }
+  .cta-btn {
+    background: var(--ink); color: var(--parchment); border: none;
+    font-family: 'Work Sans', sans-serif; font-weight: 600; font-size: 0.92rem;
+    padding: 11px 20px; border-radius: 3px; cursor: pointer;
+    text-decoration: none; display: inline-block;
+  }
+  .cta-btn:hover { background: var(--ochre-deep); color: var(--bone); }
+  .cta-btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+  .cta-btn.ghost:hover { border-color: var(--ochre-deep); color: var(--ochre-deep); background: transparent; }
+  @media (max-width: 720px) { nav .links { display: none; } }
+
+  /* HERO */
+  .hero { padding-top: 72px; padding-bottom: 40px; }
+  .hero-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 56px; align-items: start; }
+  @media (max-width: 880px) { .hero-grid { grid-template-columns: 1fr; } }
+  .eyebrow { color: var(--ochre-deep); font-weight: 600; font-size: 0.9rem; margin-bottom: 18px; }
+  .hero h1 { font-size: clamp(2.3rem, 4.6vw, 3.6rem); line-height: 1.06; font-weight: 600; max-width: 14ch; }
+  .hero .lede { margin-top: 24px; font-size: 1.15rem; color: var(--ink-soft); }
+  .hero .actions { margin-top: 34px; display: flex; gap: 14px; flex-wrap: wrap; }
+
+  .route-card {
+    background: var(--bone); border: 1px solid var(--line); border-radius: 4px;
+    padding: 32px 28px;
+  }
+  .route-card h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 22px; }
+  .route-steps { position: relative; padding-left: 28px; }
+  .route-steps::before {
+    content: ""; position: absolute; left: 6px; top: 6px; bottom: 6px; width: 2px;
+    background: repeating-linear-gradient(to bottom, var(--ochre) 0 6px, transparent 6px 12px);
+  }
+  .route-step { position: relative; padding-bottom: 26px; }
+  .route-step:last-child { padding-bottom: 0; }
+  .route-step::before {
+    content: ""; position: absolute; left: -28px; top: 3px; width: 12px; height: 12px;
+    border-radius: 50%; background: var(--ochre); border: 3px solid var(--bone); box-shadow: 0 0 0 1px var(--ochre);
+  }
+  .route-step .label { font-weight: 600; font-size: 0.98rem; }
+  .route-step .detail { color: var(--ink-soft); font-size: 0.9rem; margin-top: 3px; max-width: 40ch; }
+
+  /* SERVICES */
+  .services-head { max-width: 62ch; margin-bottom: 48px; }
+  .services-head h2 { font-size: clamp(1.7rem, 3vw, 2.2rem); font-weight: 600; }
+  .services-head p { margin-top: 14px; color: var(--ink-soft); font-size: 1.05rem; }
+  .service-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  @media (max-width: 880px) { .service-grid { grid-template-columns: 1fr; } }
+  .service-cell { background: var(--parchment); padding: 32px 30px; }
+  .service-cell .num { font-family: 'Fraunces', serif; font-size: 0.85rem; color: var(--ochre-deep); font-weight: 600; }
+  .service-cell h3 { font-size: 1.2rem; font-weight: 600; margin-top: 14px; }
+  .service-cell p { color: var(--ink-soft); margin-top: 10px; font-size: 0.96rem; }
+
+  /* BUILT DIFFERENT */
+  .built-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+  @media (max-width: 880px) { .built-grid { grid-template-columns: 1fr; gap: 32px; } }
+  .built-title { font-size: clamp(1.7rem, 3vw, 2.2rem); font-weight: 600; }
+  .built-lede { margin-top: 14px; color: var(--ink-soft); font-size: 1.05rem; }
+  .built-close { margin-top: 18px; font-weight: 600; color: var(--ink); }
+  .built-list { list-style: none; padding: 0; margin: 0; }
+  .built-list li { padding: 16px 0; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 0.98rem; }
+  .built-list li:last-child { border-bottom: 1px solid var(--line); }
+  .built-list strong { color: var(--ink); font-weight: 600; }
+
+  /* PRICING */
+  .pricing { background: var(--ink); color: var(--parchment); }
+  .pricing .services-head p { color: color-mix(in srgb, var(--parchment) 72%, transparent); }
+  .pricing .services-head h2 { color: var(--parchment); }
+  .price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 780px) { .price-grid { grid-template-columns: 1fr; } }
+  .price-card {
+    background: color-mix(in srgb, var(--parchment) 6%, transparent);
+    border: 1px solid color-mix(in srgb, var(--parchment) 20%, transparent);
+    border-radius: 4px; padding: 34px 30px;
+  }
+  .price-card.featured { border-color: var(--ochre); background: color-mix(in srgb, var(--parchment) 9%, transparent); }
+  .price-tag { color: var(--ochre); font-weight: 600; font-size: 0.85rem; letter-spacing: 0.02em; }
+  .price-card h3 { color: var(--parchment); font-size: 1.4rem; font-weight: 600; margin-top: 8px; }
+  .price-amount { font-family: 'Fraunces', serif; font-size: 2rem; margin-top: 18px; color: var(--parchment); }
+  .price-amount small { font-family: 'Work Sans', sans-serif; font-size: 0.95rem; font-weight: 400; color: color-mix(in srgb, var(--parchment) 65%, transparent); }
+  .price-list { list-style: none; padding: 0; margin: 22px 0 0; }
+  .price-list li {
+    padding: 9px 0; border-top: 1px solid color-mix(in srgb, var(--parchment) 14%, transparent);
+    font-size: 0.94rem; color: color-mix(in srgb, var(--parchment) 88%, transparent);
+  }
+  .upkeep { margin-top: 40px; padding-top: 32px; border-top: 1px solid color-mix(in srgb, var(--parchment) 20%, transparent); }
+  .upkeep-title { color: var(--parchment); font-size: 1.3rem; font-weight: 600; }
+  .upkeep-grid { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 780px) { .upkeep-grid { grid-template-columns: 1fr; } }
+  .upkeep-tier { border: 1px solid color-mix(in srgb, var(--parchment) 20%, transparent); border-radius: 4px; padding: 22px 24px; }
+  .upkeep-name { font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 600; color: var(--parchment); }
+  .upkeep-name span { font-family: 'Work Sans', sans-serif; font-size: 0.95rem; font-weight: 500; color: var(--ochre); margin-left: 8px; }
+  .upkeep-tier p { margin: 10px 0 0; font-size: 0.94rem; color: color-mix(in srgb, var(--parchment) 80%, transparent); }
+  .price-extras { margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 780px) { .price-extras { grid-template-columns: 1fr; } }
+  .price-extras p { margin: 0; font-size: 0.94rem; color: color-mix(in srgb, var(--parchment) 80%, transparent); }
+  .price-extras strong { color: var(--parchment); font-weight: 600; }
+  .price-note { margin-top: 20px; font-size: 0.85rem; color: color-mix(in srgb, var(--parchment) 55%, transparent); }
+
+  /* HOW IT WORKS */
+  .steps-row { display: flex; gap: 0; margin-top: 8px; }
+  @media (max-width: 780px) { .steps-row { flex-direction: column; } }
+  .step-item { flex: 1; padding: 26px 26px 26px 0; position: relative; }
+  .step-item:not(:last-child) { border-right: 1px solid var(--line); margin-right: 26px; }
+  @media (max-width: 780px) {
+    .step-item:not(:last-child) { border-right: none; border-bottom: 1px solid var(--line); margin-right: 0; padding-bottom: 26px; }
+  }
+  .step-num { font-family: 'Fraunces', serif; font-size: 1.6rem; color: var(--ochre-deep); }
+  .step-item h3 { font-size: 1.05rem; font-weight: 600; margin-top: 10px; }
+  .step-item p { color: var(--ink-soft); font-size: 0.92rem; margin-top: 8px; }
+
+  /* SIGNUP */
+  .signup-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 56px; }
+  @media (max-width: 880px) { .signup-grid { grid-template-columns: 1fr; } }
+  .signup-copy h2 { font-size: clamp(1.7rem, 3vw, 2.2rem); font-weight: 600; }
+  .signup-copy p { color: var(--ink-soft); margin-top: 16px; font-size: 1.03rem; }
+  .signup-copy ul { padding-left: 20px; margin-top: 22px; color: var(--ink-soft); font-size: 0.95rem; }
+  .signup-copy li { margin-bottom: 8px; }
+
+  form.intake { background: var(--bone); border: 1px solid var(--line); border-radius: 4px; padding: 32px; }
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--ink); }
+  .field input, .field select, .field textarea {
+    width: 100%; font-family: 'Work Sans', sans-serif; font-size: 0.95rem;
+    padding: 11px 12px; border: 1px solid var(--line); border-radius: 3px;
+    background: var(--parchment); color: var(--ink);
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: 2px solid var(--ochre); outline-offset: 1px; border-color: var(--ochre);
+  }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 520px) { .field-row { grid-template-columns: 1fr; } }
+  .tier-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  @media (max-width: 520px) { .tier-choice { grid-template-columns: 1fr; } }
+  .tier-option {
+    border: 1.5px solid var(--line); border-radius: 3px; padding: 14px 14px; cursor: pointer;
+    font-size: 0.88rem;
+  }
+  .tier-option input { width: auto; margin-right: 8px; }
+  .tier-option.checked { border-color: var(--ochre); background: color-mix(in srgb, var(--ochre) 8%, var(--bone)); }
+  .submit-row { margin-top: 24px; }
+  .submit-btn {
+    width: 100%; background: var(--ink); color: var(--parchment); border: none;
+    font-family: 'Work Sans', sans-serif; font-weight: 600; font-size: 1rem;
+    padding: 14px; border-radius: 3px; cursor: pointer;
+  }
+  .submit-btn:hover { background: var(--ochre-deep); }
+  .form-note { font-size: 0.8rem; color: var(--ink-soft); margin-top: 12px; text-align: center; }
+  .confirm-msg {
+    display: none; background: color-mix(in srgb, var(--moss) 14%, var(--bone));
+    border: 1px solid var(--moss); border-radius: 4px; padding: 20px; margin-top: 18px; font-size: 0.92rem;
+  }
+
+  /* FOOTER */
+  footer { border-top: 1px solid var(--line); padding: 48px 0 calc(48px + env(safe-area-inset-bottom, 0px)); }
+  .footer-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+  .footer-row .brand { font-size: 1rem; }
+  footer .fine { color: var(--ink-soft); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<header id="top">
+  <nav class="wrap">
+    <a class="brand" href="#top" aria-label="Wayfare Digital home">
+      <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="32.93" cy="67.74" r="3.20" fill="var(--ochre)"/><circle cx="37.13" cy="59.06" r="3.20" fill="var(--ochre)"/><circle cx="64.99" cy="36.56" r="3.20" fill="var(--ochre)"/><circle cx="18.00" cy="78.00" r="10.50" fill="currentColor"/><circle cx="50.00" cy="50.00" r="10.50" fill="currentColor"/><circle cx="82.00" cy="22.00" r="10.50" fill="var(--ochre)"/></svg>
+      <span>Wayfare Digital</span>
+    </a>
+    <div class="links">
+      <a href="#services">Services</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#how">How it works</a>
+      <a href="#signup">Get started</a>
+    </div>
+    <a href="#audit" class="cta-btn">See what's broken</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">For business owners who are done waiting on their website</div>
+      <h1>If your site can't convert, you can't compete.</h1>
+      <p class="lede">Most small business sites are slow, outdated, and quietly costing you customers every single day. Wayfare Digital builds the kind that actually brings people in the door, then stays on to keep it that way.</p>
+      <div class="actions">
+        <a href="#signup" class="cta-btn">Reserve your build</a>
+        <a href="#audit" class="cta-btn ghost">See what's broken, free</a>
+      </div>
+    </div>
+    <div class="route-card">
+      <h3>How your project moves</h3>
+      <div class="route-steps">
+        <div class="route-step">
+          <div class="label">Build</div>
+          <div class="detail">Your site, designed and built as a fast, installable web app, with phone use as a priority.</div>
+        </div>
+        <div class="route-step">
+          <div class="label">Launch</div>
+          <div class="detail">Live, connected to payments, ready for customers, on any device they use.</div>
+        </div>
+        <div class="route-step">
+          <div class="label">Grow</div>
+          <div class="detail">Monitored and maintained monthly, so it never falls behind, if that is the plan you choose.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="wrap">
+    <div class="services-head">
+      <h2>No jargon. No disappearing after launch. Just a site that works.</h2>
+      <p>Every project follows the same standard, so nothing about your site is a mystery, and nothing about maintaining it is guesswork.</p>
+    </div>
+    <div class="service-grid">
+      <div class="service-cell">
+        <div class="num">01</div>
+        <h3>Site build</h3>
+        <p>Built fast, mobile-first, and installable like an app, so your customers find you, trust you, and book with you without your site getting in the way.</p>
+      </div>
+      <div class="service-cell">
+        <div class="num">02</div>
+        <h3>Payments, wired in</h3>
+        <p>Booking forms, deposits, invoices, or storefront checkout, connected from day one, not bolted on later, not left for you to figure out.</p>
+      </div>
+      <div class="service-cell">
+        <div class="num">03</div>
+        <h3>Monthly care</h3>
+        <p>Hosting, monitoring, small updates, and troubleshooting, so your site stays online and current while you run your actual business.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="built" style="background: var(--bone);">
+  <div class="wrap built-grid">
+    <div>
+      <h2 class="built-title">This isn't a drag-and-drop template.</h2>
+      <p class="built-lede">Your site is hand-built by a software developer, the same way real apps are built.</p>
+      <p class="built-close">Most template sites look fine on day one and slowly fall apart. Ours are built to stay fast.</p>
+    </div>
+    <ul class="built-list">
+      <li><strong>No plugins to update.</strong> Nothing breaks because some add-on pushed a new version overnight.</li>
+      <li><strong>Fast on every phone.</strong> No bloated theme code slowing it down.</li>
+      <li><strong>Installs like an app.</strong> Customers can add it to their home screen.</li>
+      <li><strong>Less to maintain.</strong> That's why Basic upkeep is only $150.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="wrap">
+    <div class="services-head">
+      <h2>Pick the path that fits where your business is right now.</h2>
+      <p>Not where some agency thinks you should be. Same build quality either way, the difference is how you pay for it.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price-card featured">
+        <div class="price-tag">PAY UP FRONT</div>
+        <h3>Pay it off, own it at launch</h3>
+        <div class="price-amount">$1,500 <small>to start</small></div>
+        <ul class="price-list">
+          <li>$1,500 to start, $1,500 at launch. $3,000 total.</li>
+          <li>The site is yours the day it goes live.</li>
+          <li>Keep it with us, upkeep from $150/month, or take it anywhere.</li>
+        </ul>
+        <div class="price-note">No renting your own website forever. Want to take it somewhere else? We'll hand over every file and help you get it running on your new host, free.</div>
+      </div>
+      <div class="price-card">
+        <div class="price-tag">PAY MONTHLY</div>
+        <h3>Start small, own it in 18 months</h3>
+        <div class="price-amount">$350 <small>a month</small></div>
+        <ul class="price-list">
+          <li>$350/month for 18 months, Basic upkeep included. No setup fee.</li>
+          <li>Want Managed upkeep? Add $100/month.</li>
+          <li>After that, the site is yours.</li>
+          <li>Keep it with us, upkeep from $150/month, or take it anywhere.</li>
+          <li>Want to own it sooner? Pay off the balance anytime.</li>
+        </ul>
+        <div class="price-note">Less up front, same build quality. You pay a little more over time for not paying it all at once.</div>
+      </div>
+    </div>
+    <div class="upkeep">
+      <h3 class="upkeep-title">Upkeep, your way</h3>
+      <div class="upkeep-grid">
+        <div class="upkeep-tier">
+          <div class="upkeep-name">Basic <span>$150/month</span></div>
+          <p>Hosting, security, backups, and fixes if anything breaks. You make your own edits from your dashboard.</p>
+        </div>
+        <div class="upkeep-tier">
+          <div class="upkeep-name">Managed <span>$250/month</span></div>
+          <p>Everything in Basic, plus we make your updates. Send us the photo, the event, the new listing, and it's done.</p>
+        </div>
+      </div>
+    </div>
+    <div class="price-extras">
+      <p><strong>Already have a site you like?</strong> We'll put it on Managed care for $250/month after we look at it to make sure it's something we can support.</p>
+      <p><strong>Veteran-owned or women-owned?</strong> You get 10% off monthly upkeep, every month, no expiration.</p>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="services-head">
+      <h2>What happens after you sign up</h2>
+      <p>No payment, no guessing games, until you've seen the actual numbers.</p>
+    </div>
+    <div class="steps-row">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <h3>Tell us about your business</h3>
+        <p>We talk about your business first, not your color scheme: what you do, what the site needs to handle, any must-haves.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <h3>Get your custom quote</h3>
+        <p>Within minutes you'll get a real quote by email: monthly cost, setup fee, and whether we'd recommend self-managed or fully managed care, with our reasoning, not just a number.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <h3>Reserve your spot</h3>
+        <p>Like what you see, make your first payment and we start building. Live and taking customers, usually inside two to three weeks.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="audit" style="background: var(--bone);">
+  <div class="wrap">
+    <div class="services-head">
+      <div class="eyebrow">See it before you believe it</div>
+      <h2>Is your website actually working, or just sitting there?</h2>
+      <p>Drop your URL below and we'll tell you exactly what's slowing you down, what's costing you customers on mobile, and what a real fix looks like, free, no strings, in about a minute.</p>
+    </div>
+    <form class="audit-form" id="auditForm" style="display:flex; gap:14px; flex-wrap:wrap; align-items:flex-start; max-width:640px;">
+      <input type="url" id="auditUrl" placeholder="yourbusiness.com" required
+        style="flex:1 1 260px; padding:14px 16px; border:1px solid var(--line); border-radius:4px; background:var(--parchment); color:var(--ink); font-family:'Work Sans',sans-serif; font-size:1rem;">
+      <button type="submit" class="cta-btn">Show me what's broken</button>
+    </form>
+    <div class="form-note" style="margin-top:14px; color: var(--ink-soft); font-size:0.9rem;">We'll email your full report, including exactly what we'd fix first.</div>
+    <div class="confirm-msg" id="auditConfirmMsg" style="display:none; margin-top:18px;">
+      <div style="font-weight:600;">Thanks, your report is on its way. Check your inbox in a minute or two.</div>
+      <div style="margin-top:16px; padding:20px 22px; background: var(--parchment); border:1px solid var(--line); border-radius:4px; max-width:560px;">
+        <div style="font-family:'Fraunces',serif; font-weight:600; font-size:1.05rem;">Want a free quote to fix it?</div>
+        <p style="margin-top:8px; color: var(--ink-soft); font-size:0.95rem;">No hidden fees. What you see is what you pay. We'll send a real number, no strings attached.</p>
+        <a href="#signup" class="cta-btn" style="margin-top:14px; display:inline-block;">Yes, send me a quote</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="signup">
+  <div class="wrap signup-grid">
+    <div class="signup-copy">
+      <h2>You didn't start this business to babysit a website.</h2>
+      <p>Tell us what you do, we'll send back a real quote: monthly cost, setup fee, and whether you need self-managed or fully managed care, with our reasoning. Then, if it's a fit, we build something that sells your business and get out of your way.</p>
+      <ul>
+        <li>No obligation until you see your quote and choose to move forward</li>
+        <li>Your custom quote lands in your inbox within minutes</li>
+        <li>Prefer to talk first? Leave your number and we'll call</li>
+      </ul>
+    </div>
+    <form class="intake" id="intakeForm">
+      <div class="field-row">
+        <div class="field">
+          <label for="name">Your name</label>
+          <input type="text" id="name" required>
+        </div>
+        <div class="field">
+          <label for="business">Business name</label>
+          <input type="text" id="business" required>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" required>
+        </div>
+        <div class="field">
+          <label for="phone">Phone (optional)</label>
+          <input type="tel" id="phone">
+        </div>
+      </div>
+      <div class="field">
+        <label for="type">What kind of business is this?</label>
+        <input type="text" id="type" placeholder="e.g. real estate, farm, rescue, retail">
+      </div>
+      <div class="field">
+        <label for="needs">What do you need your site to do?</label>
+        <textarea id="needs" rows="3" placeholder="Booking form, online payments, a place to list services..."></textarea>
+      </div>
+      <div class="field">
+        <label for="inspiration">Any sites you like the look of? (optional)</label>
+        <input type="text" id="inspiration" placeholder="Paste a link or two, even if it's not in your industry, it helps us design faster">
+      </div>
+      <div class="field">
+        <label>How often will your site need updates?</label>
+        <div class="tier-choice">
+          <label class="tier-option" id="tierSelfLabel">
+            <input type="radio" name="updates" value="self" checked> I'll handle small edits myself
+          </label>
+          <label class="tier-option" id="tierManagedLabel">
+            <input type="radio" name="updates" value="managed"> I'll need frequent updates: new photos, events, or listings
+          </label>
+        </div>
+      </div>
+      <div class="submit-row">
+        <button type="submit" class="submit-btn">Send me my quote</button>
+        <div class="form-note">Nothing is charged. You'll get a real quote by email: monthly cost, setup fee, and our recommendation.</div>
+      </div>
+      <div class="confirm-msg" id="confirmMsg">
+        Thanks, your custom quote is on its way to your inbox. We'll follow up within a couple of days if you have questions.
+      </div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-row">
+    <div class="brand"><svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="32.93" cy="67.74" r="3.20" fill="var(--ochre)"/><circle cx="37.13" cy="59.06" r="3.20" fill="var(--ochre)"/><circle cx="64.99" cy="36.56" r="3.20" fill="var(--ochre)"/><circle cx="18.00" cy="78.00" r="10.50" fill="currentColor"/><circle cx="50.00" cy="50.00" r="10.50" fill="currentColor"/><circle cx="82.00" cy="22.00" r="10.50" fill="var(--ochre)"/></svg><span>Wayfare Digital</span></div>
+    <div class="fine">Built for people who actually run something.</div>
+  </div>
+</footer>
+
+<script>
+  const form = document.getElementById('intakeForm');
+  const confirmMsg = document.getElementById('confirmMsg');
+  const selfLabel = document.getElementById('tierSelfLabel');
+  const managedLabel = document.getElementById('tierManagedLabel');
+
+  function syncTierStyles() {
+    const checked = form.querySelector('input[name="updates"]:checked').value;
+    selfLabel.classList.toggle('checked', checked === 'self');
+    managedLabel.classList.toggle('checked', checked === 'managed');
+  }
+  form.querySelectorAll('input[name="updates"]').forEach(r => r.addEventListener('change', syncTierStyles));
+  syncTierStyles();
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    confirmMsg.style.display = 'block';
+    confirmMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+
+  const auditForm = document.getElementById('auditForm');
+  const auditConfirmMsg = document.getElementById('auditConfirmMsg');
+  auditForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    auditConfirmMsg.style.display = 'block';
+    auditConfirmMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

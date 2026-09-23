@@ -1,0 +1,16 @@
+{
+  "name": "wayfare-digital",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Wayfare Digital marketing and intake site (static PWA).",
+  "scripts": {
+    "start": "serve . --listen tcp://0.0.0.0:${PORT:-3000} --no-clipboard",
+    "dev": "serve . --listen 3000"
+  },
+  "dependencies": {
+    "serve": "14.2.4"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
