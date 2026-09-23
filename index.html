@@ -140,6 +140,18 @@
   .service-cell h3 { font-size: 1.2rem; font-weight: 600; margin-top: 14px; }
   .service-cell p { color: var(--ink-soft); margin-top: 10px; font-size: 0.96rem; }
 
+  /* AUDIT FORM */
+  .audit-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: 14px; align-items: end; max-width: 860px; margin-top: 8px; }
+  @media (max-width: 780px) { .audit-form { grid-template-columns: 1fr; } .audit-form .cta-btn { justify-self: start; } }
+  .audit-field { display: flex; flex-direction: column; gap: 6px; }
+  .audit-field label { font-size: 0.88rem; font-weight: 600; color: var(--ink); }
+  .audit-field input { padding: 13px 15px; border: 1px solid var(--line); border-radius: 4px; background: var(--parchment); color: var(--ink); font-family: 'Work Sans', sans-serif; font-size: 1rem; min-width: 0; }
+  .audit-field input:focus-visible { outline: 3px solid var(--ochre); outline-offset: 1px; }
+  .audit-field input[aria-invalid="true"] { border-color: #B3452F; }
+  .audit-form .cta-btn { height: 48px; white-space: nowrap; }
+  .audit-error { margin: 10px 0 0; min-height: 1.2em; color: #B3452F; font-size: 0.9rem; font-weight: 600; text-align: left; }
+  .audit-note { margin: 4px 0 0; color: var(--ink-soft); font-size: 0.9rem; text-align: left; max-width: 640px; }
+
   /* BUILT DIFFERENT */
   .built-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
   @media (max-width: 880px) { .built-grid { grid-template-columns: 1fr; gap: 32px; } }
@@ -421,14 +433,21 @@
     <div class="services-head">
       <div class="eyebrow">See it before you believe it</div>
       <h2>Is your website actually working, or just sitting there?</h2>
-      <p>Drop your URL below and we'll tell you exactly what's slowing you down, what's costing you customers on mobile, and what a real fix looks like, free, no strings, in about a minute.</p>
+      <p>Drop your email and website below and we'll tell you exactly what's slowing you down, what's costing you customers on mobile, and what a real fix looks like, free, no strings, in about a minute.</p>
     </div>
-    <form class="audit-form" id="auditForm" style="display:flex; gap:14px; flex-wrap:wrap; align-items:flex-start; max-width:640px;">
-      <input type="url" id="auditUrl" placeholder="yourbusiness.com" required
-        style="flex:1 1 260px; padding:14px 16px; border:1px solid var(--line); border-radius:4px; background:var(--parchment); color:var(--ink); font-family:'Work Sans',sans-serif; font-size:1rem;">
+    <form class="audit-form" id="auditForm" novalidate>
+      <div class="audit-field">
+        <label for="auditEmail">Your email</label>
+        <input type="email" id="auditEmail" name="email" autocomplete="email" placeholder="you@yourbusiness.com" required>
+      </div>
+      <div class="audit-field">
+        <label for="auditUrl">Website to check</label>
+        <input type="text" id="auditUrl" name="url" inputmode="url" autocomplete="url" placeholder="yourbusiness.com" required>
+      </div>
       <button type="submit" class="cta-btn">Show me what's broken</button>
     </form>
-    <div class="form-note" style="margin-top:14px; color: var(--ink-soft); font-size:0.9rem;">We'll email your full report, including exactly what we'd fix first.</div>
+    <p class="audit-error" id="auditError" role="alert"></p>
+    <p class="audit-note">We'll email your full report, including exactly what we'd fix first. No spam, and we never share your email.</p>
     <div class="confirm-msg" id="auditConfirmMsg" style="display:none; margin-top:18px;">
       <div style="font-weight:600;">Thanks, your report is on its way. Check your inbox in a minute or two.</div>
       <div style="margin-top:16px; padding:20px 22px; background: var(--parchment); border:1px solid var(--line); border-radius:4px; max-width:560px;">
@@ -535,8 +554,33 @@
 
   const auditForm = document.getElementById('auditForm');
   const auditConfirmMsg = document.getElementById('auditConfirmMsg');
+  const auditUrl = document.getElementById('auditUrl');
+  const auditEmail = document.getElementById('auditEmail');
+  const auditError = document.getElementById('auditError');
   auditForm.addEventListener('submit', function(e) {
     e.preventDefault();
+    auditUrl.removeAttribute('aria-invalid');
+    auditEmail.removeAttribute('aria-invalid');
+    auditError.textContent = '';
+
+    if (!auditEmail.checkValidity() || !auditEmail.value.trim()) {
+      auditEmail.setAttribute('aria-invalid', 'true');
+      auditError.textContent = 'Enter the email address where we should send your report.';
+      auditEmail.focus();
+      return;
+    }
+    let url = auditUrl.value.trim();
+    if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
+    let urlOk = false;
+    try { const u = new URL(url); urlOk = u.hostname.includes('.'); } catch (_) {}
+    if (!urlOk) {
+      auditUrl.setAttribute('aria-invalid', 'true');
+      auditError.textContent = 'Enter your website address, like yourbusiness.com.';
+      auditUrl.focus();
+      return;
+    }
+    auditUrl.value = url;
+    // TODO: send { url, email } to the audit backend (n8n webhook) here.
     auditConfirmMsg.style.display = 'block';
     auditConfirmMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
