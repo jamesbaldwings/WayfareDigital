@@ -54,10 +54,8 @@ Type: Fraunces for headlines, Work Sans for body text.
 
 ## Not built yet
 
-These parts of the page show a confirmation message but don't send data anywhere yet:
+Both forms validate, clear after submitting, and pass their data to `sendSubmission()` in `index.html`. Until `FORM_ENDPOINT` is set to a real webhook, submissions only log to the browser console and nobody receives them.
 
-- **Intake form.** Needs a backend (for example an n8n webhook) to receive submissions and send the custom quote email.
-- **Free audit form.** Needs a backend call to the PageSpeed Insights API, the emailed report, and the follow-up email sequence.
-- **Payments.** No Stripe integration yet.
+The full launch checklist (backend, SendGrid, audit, payments, contract) is in [TODO.md](TODO.md).
 
 When updating the service worker, bump `CACHE` in `sw.js` (for example `wayfare-v2`) so returning visitors get the new files.

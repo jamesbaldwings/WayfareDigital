@@ -1,0 +1,268 @@
+{
+  "name": "Wayfare Site Monitor",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "86e178ee-824b-40f9-aef1-bf3cb75fa4c5",
+      "name": "Every 5 minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, site_name, url FROM sites WHERE monitor ORDER BY id;",
+        "options": {}
+      },
+      "id": "d825fe1b-3fb7-4e8a-9e3e-dfe33a1e0dc6",
+      "name": "Get sites to check",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// n8n Code node: \"Check site\" (Mode: Run Once for Each Item)\n// Needs NODE_FUNCTION_ALLOW_BUILTIN=https,tls set on the n8n container.\nconst https = require('https');\nconst tls = require('tls');\n\nconst site = $input.item.json;\nconst TIMEOUT_MS = 15000;\n\nfunction fetchStatus(url, redirectsLeft = 3) {\n  return new Promise((resolve) => {\n    const start = Date.now();\n    const req = https.get(url, {\n      timeout: TIMEOUT_MS,\n      headers: { 'User-Agent': 'WayfareMonitor/1.0 (+site health check)' }\n    }, (res) => {\n      res.resume();\n      const ms = Date.now() - start;\n      const loc = res.headers.location;\n      if (res.statusCode >= 300 && res.statusCode < 400 && loc && redirectsLeft > 0) {\n        const next = new URL(loc, url).href;\n        if (next.startsWith('https://')) {\n          return fetchStatus(next, redirectsLeft - 1).then((r) => resolve({ ...r, ms: r.ms + ms }));\n        }\n      }\n      resolve({ status: res.statusCode, ms, error: '' });\n    });\n    req.on('timeout', () => req.destroy(new Error('Timed out after ' + TIMEOUT_MS / 1000 + 's')));\n    req.on('error', (e) => resolve({ status: 0, ms: Date.now() - start, error: e.message }));\n  });\n}\n\nfunction certificate(host, port) {\n  return new Promise((resolve) => {\n    const socket = tls.connect({ host, port, servername: host, rejectUnauthorized: false, timeout: 10000 }, () => {\n      const cert = socket.getPeerCertificate();\n      const authorized = socket.authorized;\n      socket.end();\n      if (!cert || !cert.valid_to) return resolve({ days: '', invalid: false });\n      const days = Math.floor((new Date(cert.valid_to).getTime() - Date.now()) / 86400000);\n      resolve({ days: String(days), invalid: !authorized });\n    });\n    socket.on('timeout', () => { socket.destroy(); resolve({ days: '', invalid: false }); });\n    socket.on('error', () => resolve({ days: '', invalid: false }));\n  });\n}\n\nconst target = new URL(site.url);\nconst [res, cert] = await Promise.all([\n  fetchStatus(site.url),\n  certificate(target.hostname, Number(target.port) || 443)\n]);\n// A certificate problem also breaks the page load; report it as an SSL issue, not only as \"down\".\nconst ok = res.status >= 200 && res.status < 400;\n\nreturn {\n  json: {\n    site_id: String(site.id),\n    site_name: site.site_name,\n    url: site.url,\n    ok: String(ok),\n    status_code: String(res.status),\n    response_ms: String(res.ms),\n    ssl_days_left: cert.days,\n    error: (res.error || '').slice(0, 300),\n    ssl_invalid: String(cert.invalid)\n  }\n};\n"
+      },
+      "id": "08199835-881f-4fcb-b59c-3c824672e1c5",
+      "name": "Check site",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH prev AS (\n  SELECT ok FROM checks WHERE site_id = $1::int ORDER BY checked_at DESC, id DESC LIMIT 1\n),\nins AS (\n  INSERT INTO checks (site_id, ok, status_code, response_ms, ssl_days_left, error)\n  VALUES ($1::int, $2::boolean, $3::int, $4::int, NULLIF($5, '')::int, NULLIF($6, ''))\n),\nwant AS (\n  SELECT 'down'::text AS kind,\n         NOT $2::boolean AND COALESCE((SELECT NOT ok FROM prev), false) AS failing,\n         COALESCE(NULLIF($6, ''), 'HTTP ' || $3) AS detail\n  UNION ALL\n  SELECT 'ssl'::text,\n         $7::boolean OR (NULLIF($5, '')::int IS NOT NULL AND NULLIF($5, '')::int < 14),\n         CASE WHEN $7::boolean THEN 'SSL certificate is invalid or expired'\n              ELSE 'SSL certificate expires in ' || COALESCE(NULLIF($5, ''), '?') || ' days' END\n),\nopened AS (\n  INSERT INTO incidents (site_id, kind, detail)\n  SELECT $1::int, w.kind, w.detail FROM want w\n  WHERE w.failing\n    AND NOT EXISTS (SELECT 1 FROM incidents i\n                    WHERE i.site_id = $1::int AND i.kind = w.kind AND i.resolved_at IS NULL)\n  RETURNING 'opened'::text AS action, kind, detail\n),\nclosed AS (\n  UPDATE incidents i SET resolved_at = now()\n  FROM want w\n  WHERE i.site_id = $1::int AND i.kind = w.kind AND i.resolved_at IS NULL AND NOT w.failing\n  RETURNING 'resolved'::text AS action, i.kind, i.detail,\n            round(extract(epoch FROM (now() - i.opened_at)) / 60)::int AS minutes_open\n)\nSELECT action, kind, detail, NULL::int AS minutes_open, $8 AS site_name, $9 AS url FROM opened\nUNION ALL\nSELECT action, kind, detail, minutes_open, $8, $9 FROM closed;",
+        "options": {
+          "queryReplacement": "={{ [ $json.site_id, $json.ok, $json.status_code, $json.response_ms, $json.ssl_days_left, $json.error, $json.ssl_invalid, $json.site_name, $json.url ] }}"
+        }
+      },
+      "id": "ca8da3f2-3b9b-4318-8369-c3f092698967",
+      "name": "Record check and update incidents",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        660,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "68e63e87-8bcb-45a9-b4a1-3db867c07ae2",
+              "leftValue": "={{ $json.action }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b842e77d-8143-4ba3-8f4f-7f5ba81b0401",
+      "name": "Anything changed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        880,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// n8n Code node: \"Write alert message\" (Mode: Run Once for Each Item)\nconst r = $input.item.json;\nconst site = `${r.site_name}\\n${r.url}`;\nlet text;\nif (r.kind === 'down' && r.action === 'opened') {\n  text = `DOWN: ${site}\\nProblem: ${r.detail}\\nFailed two checks in a row, 5 minutes apart.`;\n} else if (r.kind === 'down' && r.action === 'resolved') {\n  text = `BACK UP: ${site}\\nIt was down for about ${r.minutes_open} minutes.`;\n} else if (r.kind === 'ssl' && r.action === 'opened') {\n  text = `SSL WARNING: ${site}\\n${r.detail}. Browsers will show visitors a security warning if it lapses.`;\n} else {\n  text = `SSL OK again: ${site}`;\n}\nreturn { json: { text } };\n"
+      },
+      "id": "c3025ea4-c73b-4814-8800-a3ce41011c73",
+      "name": "Write alert message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "40d67f52-eca7-44b1-8175-4ea6b7af9be2",
+      "name": "Alert Avi",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1320,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "triggerAtHour": 3,
+              "triggerAtMinute": 15
+            }
+          ]
+        }
+      },
+      "id": "5137b90c-06de-4ac3-b3bc-230e3721c5fd",
+      "name": "Daily at 3:15 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM checks WHERE checked_at < now() - interval '90 days';",
+        "options": {}
+      },
+      "id": "eb98b62f-ea20-4c00-b463-1d4b7efcd3c3",
+      "name": "Delete checks older than 90 days",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        220,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Wayfare Site Monitor\nChecks every site in the `sites` table every 5 minutes: status, response time, SSL certificate. Opens an incident after 2 failures in a row and alerts on Telegram. Sends an all-clear on recovery. Warns 14 days before SSL expires.\n\n**Needs** `NODE_FUNCTION_ALLOW_BUILTIN=https,tls` on the n8n container, a Postgres credential on the three Postgres nodes, a Telegram credential, and YOUR_TELEGRAM_CHAT_ID replaced.\n\nPause a site: `UPDATE sites SET monitor = false WHERE id = ...;`",
+        "height": 300,
+        "width": 520
+      },
+      "id": "454de863-3fb7-47f6-859a-28ffa35f277f",
+      "name": "Note 9d5395",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -40
+      ]
+    }
+  ],
+  "connections": {
+    "Every 5 minutes": {
+      "main": [
+        [
+          {
+            "node": "Get sites to check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get sites to check": {
+      "main": [
+        [
+          {
+            "node": "Check site",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check site": {
+      "main": [
+        [
+          {
+            "node": "Record check and update incidents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record check and update incidents": {
+      "main": [
+        [
+          {
+            "node": "Anything changed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anything changed?": {
+      "main": [
+        [
+          {
+            "node": "Write alert message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write alert message": {
+      "main": [
+        [
+          {
+            "node": "Alert Avi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily at 3:15 AM": {
+      "main": [
+        [
+          {
+            "node": "Delete checks older than 90 days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

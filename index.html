@@ -140,6 +140,9 @@
   .service-cell h3 { font-size: 1.2rem; font-weight: 600; margin-top: 14px; }
   .service-cell p { color: var(--ink-soft); margin-top: 10px; font-size: 0.96rem; }
 
+  .form-error { margin: 12px 0 0; min-height: 1.2em; color: #B3452F; font-size: 0.9rem; font-weight: 600; }
+  button[aria-busy="true"] { opacity: 0.7; cursor: progress; }
+  .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
   /* AUDIT FORM */
   .audit-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: 14px; align-items: end; max-width: 860px; margin-top: 8px; }
   @media (max-width: 780px) { .audit-form { grid-template-columns: 1fr; } .audit-form .cta-btn { justify-self: start; } }
@@ -417,7 +420,7 @@
       <div class="step-item">
         <div class="step-num">2</div>
         <h3>Get your custom quote</h3>
-        <p>Within minutes you'll get a real quote by email: monthly cost, setup fee, and whether we'd recommend self-managed or fully managed care, with our reasoning, not just a number.</p>
+        <p>Within one business day you'll get a real quote by email: monthly cost, setup fee, and whether we'd recommend self-managed or fully managed care, with our reasoning, not just a number.</p>
       </div>
       <div class="step-item">
         <div class="step-num">3</div>
@@ -436,6 +439,10 @@
       <p>Drop your email and website below and we'll tell you exactly what's slowing you down, what's costing you customers on mobile, and what a real fix looks like, free, no strings, in about a minute.</p>
     </div>
     <form class="audit-form" id="auditForm" novalidate>
+      <div class="hp" aria-hidden="true">
+        <label for="auditNickname">Leave this empty</label>
+        <input type="text" id="auditNickname" name="nickname" tabindex="-1" autocomplete="off">
+      </div>
       <div class="audit-field">
         <label for="auditEmail">Your email</label>
         <input type="email" id="auditEmail" name="email" autocomplete="email" placeholder="you@yourbusiness.com" required>
@@ -448,12 +455,12 @@
     </form>
     <p class="audit-error" id="auditError" role="alert"></p>
     <p class="audit-note">We'll email your full report, including exactly what we'd fix first. No spam, and we never share your email.</p>
-    <div class="confirm-msg" id="auditConfirmMsg" style="display:none; margin-top:18px;">
-      <div style="font-weight:600;">Thanks, your report is on its way. Check your inbox in a minute or two.</div>
+    <div class="confirm-msg" id="auditConfirmMsg" role="status" tabindex="-1" style="display:none; margin-top:18px;">
+      <div style="font-weight:600;" id="auditConfirmText">Thanks, your report is on its way. Check your inbox in a minute or two.</div>
       <div style="margin-top:16px; padding:20px 22px; background: var(--parchment); border:1px solid var(--line); border-radius:4px; max-width:560px;">
         <div style="font-family:'Fraunces',serif; font-weight:600; font-size:1.05rem;">Want a free quote to fix it?</div>
         <p style="margin-top:8px; color: var(--ink-soft); font-size:0.95rem;">No hidden fees. What you see is what you pay. We'll send a real number, no strings attached.</p>
-        <a href="#signup" class="cta-btn" style="margin-top:14px; display:inline-block;">Yes, send me a quote</a>
+        <a href="#signup" id="quoteFromAudit" class="cta-btn" style="margin-top:14px; display:inline-block;">Yes, send me a quote</a>
       </div>
     </div>
   </div>
@@ -466,42 +473,50 @@
       <p>Tell us what you do, we'll send back a real quote: monthly cost, setup fee, and whether you need self-managed or fully managed care, with our reasoning. Then, if it's a fit, we build something that sells your business and get out of your way.</p>
       <ul>
         <li>No obligation until you see your quote and choose to move forward</li>
-        <li>Your custom quote lands in your inbox within minutes</li>
+        <li>Your custom quote lands in your inbox within one business day</li>
         <li>Prefer to talk first? Leave your number and we'll call</li>
       </ul>
     </div>
     <form class="intake" id="intakeForm">
+      <div class="hp" aria-hidden="true">
+        <label for="intakeNickname">Leave this empty</label>
+        <input type="text" id="intakeNickname" name="nickname" tabindex="-1" autocomplete="off">
+      </div>
       <div class="field-row">
         <div class="field">
           <label for="name">Your name</label>
-          <input type="text" id="name" required>
+          <input type="text" id="name" name="name" autocomplete="name" required>
         </div>
         <div class="field">
           <label for="business">Business name</label>
-          <input type="text" id="business" required>
+          <input type="text" id="business" name="business" autocomplete="organization" required>
         </div>
       </div>
       <div class="field-row">
         <div class="field">
           <label for="email">Email</label>
-          <input type="email" id="email" required>
+          <input type="email" id="email" name="email" autocomplete="email" required>
         </div>
         <div class="field">
           <label for="phone">Phone (optional)</label>
-          <input type="tel" id="phone">
+          <input type="tel" id="phone" name="phone" autocomplete="tel">
         </div>
       </div>
       <div class="field">
         <label for="type">What kind of business is this?</label>
-        <input type="text" id="type" placeholder="e.g. real estate, farm, rescue, retail">
+        <input type="text" id="type" name="business_type" placeholder="e.g. real estate, farm, rescue, retail">
+      </div>
+      <div class="field">
+        <label for="currentSite">Current website (if you have one)</label>
+        <input type="text" id="currentSite" name="current_site" inputmode="url" autocomplete="url" placeholder="yourbusiness.com">
       </div>
       <div class="field">
         <label for="needs">What do you need your site to do?</label>
-        <textarea id="needs" rows="3" placeholder="Booking form, online payments, a place to list services..."></textarea>
+        <textarea id="needs" name="needs" rows="3" placeholder="Booking form, online payments, a place to list services..."></textarea>
       </div>
       <div class="field">
         <label for="inspiration">Any sites you like the look of? (optional)</label>
-        <input type="text" id="inspiration" placeholder="Paste a link or two, even if it's not in your industry, it helps us design faster">
+        <input type="text" id="inspiration" name="inspiration" placeholder="Paste a link or two, even if it's not in your industry, it helps us design faster">
       </div>
       <div class="field">
         <label>How often will your site need updates?</label>
@@ -518,8 +533,9 @@
         <button type="submit" class="submit-btn">Send me my quote</button>
         <div class="form-note">Nothing is charged. You'll get a real quote by email: monthly cost, setup fee, and our recommendation.</div>
       </div>
-      <div class="confirm-msg" id="confirmMsg">
-        Thanks, your custom quote is on its way to your inbox. We'll follow up within a couple of days if you have questions.
+      <p class="form-error" id="intakeError" role="alert"></p>
+      <div class="confirm-msg" id="confirmMsg" role="status" tabindex="-1">
+        <span id="confirmText">Got it. Your custom quote will be in your inbox within one business day.</span> Check your email for a copy of what you sent.
       </div>
     </form>
   </div>
@@ -533,8 +549,48 @@
 </footer>
 
 <script>
+  // ---------------------------------------------------------------
+  // Where form submissions go. Paste the n8n webhook URL here once it
+  // exists. While it's empty, submissions only log to the console.
+  // ---------------------------------------------------------------
+  const FORM_ENDPOINT = ''; // e.g. 'https://YOUR-N8N-DOMAIN/webhook/wayfare-forms'
+
+  async function sendSubmission(type, data) {
+    const payload = { type, submitted_at: new Date().toISOString(), page: location.href, ...data };
+    if (!FORM_ENDPOINT) {
+      console.info('[Wayfare] No FORM_ENDPOINT set. Submission not sent:', payload);
+      return;
+    }
+    const res = await fetch(FORM_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('Submission failed with status ' + res.status);
+  }
+
+  function normalizeUrl(value) {
+    let url = (value || '').trim();
+    if (!url) return '';
+    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    try { const u = new URL(url); return u.hostname.includes('.') ? u.href.replace(/\/$/, '') : null; }
+    catch (_) { return null; }
+  }
+  const displayUrl = (url) => url.replace(/^https?:\/\//, '').replace(/^www\./, '');
+
+  function setBusy(button, busy, busyText) {
+    if (busy) { button.dataset.label = button.textContent; button.textContent = busyText; }
+    else if (button.dataset.label) { button.textContent = button.dataset.label; }
+    button.disabled = busy;
+    button.setAttribute('aria-busy', busy ? 'true' : 'false');
+  }
+
+  // ---------- Intake form ----------
   const form = document.getElementById('intakeForm');
   const confirmMsg = document.getElementById('confirmMsg');
+  const confirmText = document.getElementById('confirmText');
+  const intakeError = document.getElementById('intakeError');
+  const intakeBtn = form.querySelector('button[type="submit"]');
   const selfLabel = document.getElementById('tierSelfLabel');
   const managedLabel = document.getElementById('tierManagedLabel');
 
@@ -546,43 +602,92 @@
   form.querySelectorAll('input[name="updates"]').forEach(r => r.addEventListener('change', syncTierStyles));
   syncTierStyles();
 
-  form.addEventListener('submit', function(e) {
+  form.addEventListener('submit', async function(e) {
     e.preventDefault();
-    confirmMsg.style.display = 'block';
-    confirmMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    intakeError.textContent = '';
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+
+    const currentSite = normalizeUrl(form.elements['current_site'].value);
+    if (currentSite === null) {
+      intakeError.textContent = 'Check your current website address, like yourbusiness.com.';
+      form.elements['current_site'].focus();
+      return;
+    }
+    const data = Object.fromEntries(new FormData(form));
+    data.current_site = currentSite;
+
+    setBusy(intakeBtn, true, 'Sending...');
+    try {
+      await sendSubmission('intake', data);
+      const email = data.email;
+      form.reset();
+      syncTierStyles();
+      confirmText.textContent = 'Got it. Your custom quote will be in ' + email + ' within one business day.';
+      confirmMsg.style.display = 'block';
+      confirmMsg.focus({ preventScroll: true });
+      confirmMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } catch (err) {
+      console.error(err);
+      intakeError.textContent = "That didn't go through. Check your connection and try again.";
+    } finally {
+      setBusy(intakeBtn, false);
+    }
   });
 
+  // ---------- Free audit form ----------
   const auditForm = document.getElementById('auditForm');
   const auditConfirmMsg = document.getElementById('auditConfirmMsg');
+  const auditConfirmText = document.getElementById('auditConfirmText');
   const auditUrl = document.getElementById('auditUrl');
   const auditEmail = document.getElementById('auditEmail');
   const auditError = document.getElementById('auditError');
-  auditForm.addEventListener('submit', function(e) {
+  const auditBtn = auditForm.querySelector('button[type="submit"]');
+  let lastAudit = null;
+
+  auditForm.addEventListener('submit', async function(e) {
     e.preventDefault();
     auditUrl.removeAttribute('aria-invalid');
     auditEmail.removeAttribute('aria-invalid');
     auditError.textContent = '';
 
-    if (!auditEmail.checkValidity() || !auditEmail.value.trim()) {
+    if (!auditEmail.value.trim() || !auditEmail.checkValidity()) {
       auditEmail.setAttribute('aria-invalid', 'true');
       auditError.textContent = 'Enter the email address where we should send your report.';
       auditEmail.focus();
       return;
     }
-    let url = auditUrl.value.trim();
-    if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
-    let urlOk = false;
-    try { const u = new URL(url); urlOk = u.hostname.includes('.'); } catch (_) {}
-    if (!urlOk) {
+    const url = normalizeUrl(auditUrl.value);
+    if (!url) {
       auditUrl.setAttribute('aria-invalid', 'true');
       auditError.textContent = 'Enter your website address, like yourbusiness.com.';
       auditUrl.focus();
       return;
     }
-    auditUrl.value = url;
-    // TODO: send { url, email } to the audit backend (n8n webhook) here.
-    auditConfirmMsg.style.display = 'block';
-    auditConfirmMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    const email = auditEmail.value.trim();
+    setBusy(auditBtn, true, 'Sending...');
+    try {
+      await sendSubmission('audit', { email, url, nickname: document.getElementById('auditNickname').value });
+      lastAudit = { email, url };
+      auditForm.reset();
+      auditConfirmText.textContent = 'Thanks. Your report for ' + displayUrl(url) + ' is on its way to ' + email + '. Check your inbox in a minute or two.';
+      auditConfirmMsg.style.display = 'block';
+      auditConfirmMsg.focus({ preventScroll: true });
+      auditConfirmMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } catch (err) {
+      console.error(err);
+      auditError.textContent = "That didn't go through. Check your connection and try again.";
+    } finally {
+      setBusy(auditBtn, false);
+    }
+  });
+
+  // "Yes, send me a quote" carries the audit details into the intake form.
+  document.getElementById('quoteFromAudit').addEventListener('click', function() {
+    if (!lastAudit) return;
+    if (!form.elements['email'].value) form.elements['email'].value = lastAudit.email;
+    if (!form.elements['current_site'].value) form.elements['current_site'].value = displayUrl(lastAudit.url);
+    setTimeout(() => form.elements['name'].focus({ preventScroll: true }), 400);
   });
 </script>
 
