@@ -60,9 +60,9 @@ CREATE TABLE IF NOT EXISTS submissions (
 CREATE INDEX IF NOT EXISTS submissions_email_idx ON submissions (lower(email));
 CREATE INDEX IF NOT EXISTS submissions_time_idx ON submissions (submitted_at DESC);
 
--- Start by monitoring the Wayfare site itself. Replace the URL with the real domain.
+-- Start by monitoring the Wayfare site itself.
 INSERT INTO sites (client_name, site_name, url, payment_plan, upkeep_tier, github_repo, hosting, notes)
-VALUES ('Wayfare Digital', 'Wayfare Digital marketing site', 'https://YOUR_DOMAIN',
+VALUES ('Wayfare Digital', 'Wayfare Digital marketing site', 'https://wayfaredigital.com',
         'internal', 'none', 'jamesbaldwings/WayfareDigital', 'railway', 'Our own site')
 ON CONFLICT (url) DO NOTHING;
 
