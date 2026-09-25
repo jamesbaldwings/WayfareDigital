@@ -553,7 +553,7 @@
   // Where form submissions go. Paste the n8n webhook URL here once it
   // exists. While it's empty, submissions only log to the console.
   // ---------------------------------------------------------------
-  const FORM_ENDPOINT = ''; // e.g. 'https://YOUR-N8N-DOMAIN/webhook/wayfare-forms'
+  const FORM_ENDPOINT = 'https://n8n.srv1110977.hstgr.cloud/webhook/wayfare-forms'; // e.g. 'https://YOUR-N8N-DOMAIN/webhook/wayfare-forms'
 
   async function sendSubmission(type, data) {
     const payload = { type, submitted_at: new Date().toISOString(), page: location.href, ...data };
